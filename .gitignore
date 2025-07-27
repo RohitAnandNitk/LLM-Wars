@@ -1,6 +1,20 @@
-#add .env file to the gitignore
-./__pycache__/
-*.pyc
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
 .env
-*.env   
-./venv
+*.env
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
