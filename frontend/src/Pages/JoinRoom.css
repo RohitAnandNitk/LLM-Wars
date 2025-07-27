@@ -1,0 +1,58 @@
+/* JoinRoom.css */
+
+.join-room-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #ede9fe, #f0f9ff);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.join-room-box {
+  background-color: #ffffff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.join-room-box h2 {
+  color: #1e3a8a;
+  margin-bottom: 20px;
+}
+
+.join-room-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.join-room-box button {
+  background-color: #1e3a8a;
+  color: #ffffff;
+  border: none;
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.join-room-box button:hover {
+  background-color: #3746a3;
+}
+
+.join-room-box input::placeholder {
+  color: #64748b;
+}
+
+.join-room-box input {
+  background-color: #f9fafb;
+  color: #1e293b;
+}

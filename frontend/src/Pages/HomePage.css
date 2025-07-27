@@ -1,0 +1,38 @@
+.home-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #1e3a8a, #9333ea);
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.home-title {
+  font-size: 3rem;
+  margin-bottom: 40px;
+}
+
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.home-buttons button {
+  padding: 15px 30px;
+  font-size: 18px;
+  background: white;
+  color: #1e3a8a;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.home-buttons button:hover {
+  transform: scale(1.05);
+  background-color: #f0f0f0;
+}

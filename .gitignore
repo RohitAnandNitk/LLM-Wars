@@ -1,0 +1,6 @@
+#add .env file to the gitignore
+./__pycache__/
+*.pyc
+.env
+*.env   
+./venv
