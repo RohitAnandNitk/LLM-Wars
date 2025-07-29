@@ -130,3 +130,42 @@ html, body, #root {
   cursor: pointer;
   font-size: 16px;
 }
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  color : black
+}
+
+.popup-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.popup-actions button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #4f46e5;  /* Optional: nice violet-blue */
+  color: white;
+  border: none;
+  transition: background 0.3s;
+}
+
+.popup-actions button:hover {
+  background-color: #4338ca;
+}
+

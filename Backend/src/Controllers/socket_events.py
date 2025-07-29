@@ -50,9 +50,32 @@ def handle_game_won(data):
     room_id = data.get("roomId")
     winner = data.get("winner")
 
-    # Broadcast to all in the room
+    if not room_id or not winner:
+        print("❌ Missing roomId or winner in game_won event")
+        return
+
+    print(f"🏁 Game won by {winner} in room {room_id}")
+
+    # Notify everyone in the room that the game is over
     emit("game_over", {
         "winner": winner
     }, to=room_id)
+
+
+@socketio.on("rematch")
+def handle_rematch(data):
+    room_id = data.get("roomId")
+
+    if not room_id:
+        return
+
+    # Pick a new image
+    new_image_index = random.randint(0, 4)
+    active_rooms[room_id] = new_image_index
+
+    print(f"🔁 Rematch started in room {room_id} with image {new_image_index}", flush=True)
+
+    # Emit rematch event with new image to all users in room
+    emit("rematch", {"imageIndex": new_image_index}, to=room_id)
 
 

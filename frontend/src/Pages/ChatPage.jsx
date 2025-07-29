@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./ChatPage.css";
 import { getCompanyGuess } from "../APIs/api.jsx";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import socket from "../SocketIO/socketio.jsx";
 
 import microsoft from "../assets/microsoft.png";
@@ -15,16 +15,29 @@ const companyImages = [google, apple, tesla, microsoft, amazon];
 const companyAnswers = ["Google", "Apple", "Tesla", "Microsoft", "Amazon"];
 
 const ChatPage = () => {
-  const { roomId } = useParams(); // 👈 roomId from URL
+  const navigate = useNavigate();
+  const { roomId } = useParams();
   const location = useLocation();
-  const playerName = location.state?.playerName ?? "Player";
+  const playerName = location.state?.playerName ?? "";
   const initialImageIndex = location.state?.imageIndex ?? null;
   const [imageIndex, setImageIndex] = useState(initialImageIndex);
+  const [showGameOverPopup, setShowGameOverPopup] = useState(false);
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [model, setModel] = useState("Groq");
   const [isCorrect, setIsCorrect] = useState(false); // flag if game is won
+  const [gameResult, setGameResult] = useState(""); // "won" or "lost"
+
+  const handleRematch = () => {
+    socket.emit("rematch", { roomId }); // backend will reset game for room
+    setShowGameOverPopup(false); // close popup
+  };
+
+  const handleExit = () => {
+    socket.emit("leave_room", { roomId });
+    navigate("/"); // go back to home
+  };
 
   const handleSend = async () => {
     if (!input.trim() || isCorrect) return;
@@ -55,6 +68,7 @@ const ChatPage = () => {
             content: `🎉 Correct! It's ${correctAnswer}. You win!`,
           },
         ]);
+        setShowGameOverPopup(true);
       }
     } catch (error) {
       console.error("Error fetching guess:", error);
@@ -69,8 +83,13 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
+    // GAME OVER listener
     socket.on("game_over", (data) => {
       setIsCorrect(true); // disable input
+
+      const result = data.winner === playerName ? "won" : "lost";
+      setGameResult(result);
+
       setMessages((prev) => [
         ...prev,
         {
@@ -78,9 +97,26 @@ const ChatPage = () => {
           content: `🎉 Game Over! ${data.winner} won!`,
         },
       ]);
+
+      setShowGameOverPopup(true); // ✅ Show popup to all players
     });
 
-    return () => socket.off("game_over");
+    // ✅ REMATCH listener
+    socket.on("rematch", (data) => {
+      const { imageIndex: newImageIndex } = data;
+
+      setImageIndex(newImageIndex);
+      setMessages([]);
+      setInput("");
+      setIsCorrect(false);
+      setGameResult("");
+      setShowGameOverPopup(false);
+    });
+
+    return () => {
+      socket.off("game_over");
+      socket.off("rematch"); // clean up listener
+    };
   }, []);
 
   const logoImage = imageIndex !== null ? companyImages[imageIndex] : null;
@@ -133,6 +169,24 @@ const ChatPage = () => {
           </button>
         </div>
       </div>
+
+      {/* GAME OVER POPUP */}
+      {showGameOverPopup && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <h2>Game Over</h2>
+            <p>
+              {gameResult === "won"
+                ? "🎉 You won the game!"
+                : "😢 You lost the game!"}
+            </p>
+            <div className="popup-actions">
+              <button onClick={handleRematch}>🔁 Rematch</button>
+              <button onClick={handleExit}>🚪 Exit</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
