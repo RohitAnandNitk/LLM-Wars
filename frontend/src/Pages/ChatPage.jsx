@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./ChatPage.css";
-import { getCompanyGuess } from "../APIs/api.jsx";
+import { getCompanyGuess, verifyClueIsFair } from "../APIs/api.jsx";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import socket from "../SocketIO/socketio.jsx";
 
@@ -39,44 +39,90 @@ const ChatPage = () => {
     navigate("/"); // go back to home
   };
 
+  const normalize = (text) => {
+    console.log("Normalizing input:", text);
+    return text.toLowerCase().replace(/[^a-z]/g, ""); // remove non-alphabet chars
+  };
+
   const handleSend = async () => {
+    console.log("Sending message:", input);
     if (!input.trim() || isCorrect) return;
 
     const userMessage = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
 
+    const correctAnswer = companyAnswers[imageIndex];
+    const normalizedInput = normalize(input);
+    const normalizedAnswer = normalize(correctAnswer);
+
+    console.log("Normalized input:", normalizedInput);
+    console.log("Normalized answer:", normalizedAnswer);
+
+    // Basic client-side block
+    if (normalizedInput.includes(normalizedAnswer)) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "⚠️ Invalid clue. Please avoid using the company's name directly or in disguised form.",
+        },
+      ]);
+      setInput("");
+      return;
+    }
+
     try {
+      // Step 1: Get guess
       const guess = await getCompanyGuess(input, model.toLowerCase());
-      const botMessage = { role: "assistant", content: guess };
-      setMessages((prev) => [...prev, botMessage]);
+      const normalizedGuess = normalize(guess);
+      const isCorrectGuess = normalizedGuess === normalizedAnswer;
 
-      // Compare with correct answer
-      const correctAnswer = companyAnswers[imageIndex];
-      if (guess.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+      // Step 2: If correct, check clue fairness
+      if (isCorrectGuess) {
+        const isFair = await verifyClueIsFair(input, correctAnswer, model);
+
+        if (!isFair) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content:
+                "⚠️ Invalid clue detected. It seems like the clue revealed the company name directly or in disguised form. Try again.",
+            },
+          ]);
+          setInput("");
+          return;
+        }
+
+        // Emit winner — actual popup will be shown in socket listener
         setIsCorrect(true);
-
-        // 👇 Emit to backend that someone has won
         socket.emit("game_won", {
-          roomId: roomId,
+          roomId,
           winner: playerName,
         });
 
         setMessages((prev) => [
           ...prev,
+          { role: "assistant", content: guess },
           {
             role: "assistant",
             content: `🎉 Correct! It's ${correctAnswer}. You win!`,
           },
         ]);
-        setShowGameOverPopup(true);
+      } else {
+        // Wrong guess
+        setMessages((prev) => [...prev, { role: "assistant", content: guess }]);
       }
     } catch (error) {
       console.error("Error fetching guess:", error);
-      const errorMessage = {
-        role: "assistant",
-        content: "❌ Failed to get guess. Please try again.",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "❌ Failed to get guess. Please try again.",
+        },
+      ]);
     }
 
     setInput("");
@@ -85,8 +131,7 @@ const ChatPage = () => {
   useEffect(() => {
     // GAME OVER listener
     socket.on("game_over", (data) => {
-      setIsCorrect(true); // disable input
-
+      setIsCorrect(true);
       const result = data.winner === playerName ? "won" : "lost";
       setGameResult(result);
 
@@ -98,13 +143,17 @@ const ChatPage = () => {
         },
       ]);
 
-      setShowGameOverPopup(true); // ✅ Show popup to all players
+      if (data.winner === playerName) {
+        setTimeout(() => {
+          setShowGameOverPopup(true);
+        }, 2000); // Delay for winner
+      } else {
+        setShowGameOverPopup(true); // Immediate for others
+      }
     });
 
-    // ✅ REMATCH listener
     socket.on("rematch", (data) => {
       const { imageIndex: newImageIndex } = data;
-
       setImageIndex(newImageIndex);
       setMessages([]);
       setInput("");
@@ -115,7 +164,7 @@ const ChatPage = () => {
 
     return () => {
       socket.off("game_over");
-      socket.off("rematch"); // clean up listener
+      socket.off("rematch");
     };
   }, []);
 

@@ -16,3 +16,16 @@ export async function getCompanyGuess(message, model) {
   const data = await response.json();
   return data.guess;
 }
+
+export const verifyClueIsFair = async (clue, company, model) => {
+  console.log(
+    `Verifying clue fairness: ${clue} for company: ${company} using model: ${model}`
+  );
+  const response = await fetch(`${BASE_URL}/check_clue`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ clue, company, model }),
+  });
+  const result = await response.json();
+  return result.fair; // should be true/false
+};
