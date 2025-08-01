@@ -1,4 +1,4 @@
-/* Base styles (desktop-first) */
+/* Ensure root fills entire viewport */
 html, body, #root {
   margin: 0;
   padding: 0;
@@ -9,14 +9,14 @@ html, body, #root {
   background: #f2f2f2;
 }
 
+/* Main wrapper */
 .game-wrapper {
   display: flex;
-  flex-direction: row;
   height: 100vh;
   width: 100vw;
 }
 
-/* Left: Logo Section */
+/* Left side: logo area */
 .logo-section {
   width: 40%;
   display: flex;
@@ -32,7 +32,7 @@ html, body, #root {
   object-fit: contain;
 }
 
-/* Right: Chat Section */
+/* Right side: chat area */
 .chat-section {
   width: 60%;
   padding: 20px;
@@ -41,6 +41,7 @@ html, body, #root {
   height: 100%;
   box-sizing: border-box;
   background-color: #f9f9f9;
+  overflow: hidden;
 }
 
 .title {
@@ -71,8 +72,10 @@ html, body, #root {
   color: #1e3a8a;
 }
 
+/* Messages container with scroll and limited height */
 .chat-box {
   flex-grow: 1;
+  max-height: 60vh;
   overflow-y: auto;
   background: #ffffff;
   padding: 10px;
@@ -83,6 +86,7 @@ html, body, #root {
   flex-direction: column;
 }
 
+/* Message bubbles */
 .message {
   margin: 6px 0;
   padding: 10px 14px;
@@ -105,6 +109,7 @@ html, body, #root {
   border-top-left-radius: 0;
 }
 
+/* Input box section */
 .input-area {
   display: flex;
   gap: 10px;
@@ -128,6 +133,7 @@ html, body, #root {
   font-size: 16px;
 }
 
+/* Pop-up styles */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -166,62 +172,37 @@ html, body, #root {
   background-color: #4338ca;
 }
 
-/* 🔁 RESPONSIVE STYLES */
+/* Responsive styling for mobile and tablets */
 @media (max-width: 768px) {
   .game-wrapper {
     flex-direction: column;
-    height: auto;
-    min-height: 100vh;
   }
 
   .logo-section {
     width: 100%;
-    height: 200px;
+    height: 20vh;
     border-right: none;
     border-bottom: 1px solid #ccc;
   }
 
   .chat-section {
     width: 100%;
-    padding: 16px;
-    flex: 1;
+    height: 80vh;
+    padding: 15px;
+  }
+
+  .chat-box {
+    max-height: 50vh;
+  }
+
+  .input-area {
+    margin-top: auto;
+    flex-direction: row;
+    gap: 8px;
   }
 
   .input-area input,
   .input-area button {
     font-size: 14px;
-    padding: 8px;
-  }
-
-  .title {
-    font-size: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .logo-section {
-    height: 150px;
-  }
-
-  .chat-section {
-    padding: 12px;
-  }
-
-  .title {
-    font-size: 18px;
-  }
-
-  .message {
-    font-size: 14px;
-    padding: 8px 12px;
-  }
-
-  .input-area {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .input-area button {
-    width: 100%;
   }
 }
