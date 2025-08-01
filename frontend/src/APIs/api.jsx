@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "https://llm-wars.onrender.com/api";
+// const BASE_URL = "http://localhost:5000/api";
 
 export async function getCompanyGuess(message, model) {
   const response = await fetch(`${BASE_URL}/guess`, {

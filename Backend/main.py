@@ -8,7 +8,7 @@ from src.SocketIO.socket_instance import socketio  # ⬅️ import from new modu
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
+CORS(app, origins=["http://localhost:5173", "https://llm-wars.vercel.app"], supports_credentials=True)
 
 # Attach app to socketio AFTER Flask app setup
 socketio.init_app(app)
