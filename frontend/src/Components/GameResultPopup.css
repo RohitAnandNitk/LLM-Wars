@@ -1,0 +1,53 @@
+/* src/components/GameResultPopup.css */
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-box {
+  background: white;
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.popup-box h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.popup-box p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.popup-actions button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #4f46e5;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.popup-actions button:hover {
+  background-color: #4338ca;
+}

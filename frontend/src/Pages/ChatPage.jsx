@@ -3,6 +3,7 @@ import "./ChatPage.css";
 import { getCompanyGuess, verifyClueIsFair } from "../APIs/api.jsx";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import socket from "../SocketIO/socketio.jsx";
+import GameResultPopup from "../Components/GameResultPopup.jsx";
 
 import microsoft from "../assets/microsoft.png";
 import google from "../assets/google.png";
@@ -207,7 +208,7 @@ const ChatPage = () => {
         <div className="input-area">
           <input
             type="text"
-            placeholder="Enter company clue..."
+            placeholder="Enter a clue..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
@@ -221,20 +222,11 @@ const ChatPage = () => {
 
       {/* GAME OVER POPUP */}
       {showGameOverPopup && (
-        <div className="popup-overlay">
-          <div className="popup-box">
-            <h2>Game Over</h2>
-            <p>
-              {gameResult === "won"
-                ? "🎉 You won the game!"
-                : "😢 You lost the game!"}
-            </p>
-            <div className="popup-actions">
-              <button onClick={handleRematch}>🔁 Rematch</button>
-              <button onClick={handleExit}>🚪 Exit</button>
-            </div>
-          </div>
-        </div>
+        <GameResultPopup
+          gameResult={gameResult}
+          onRematch={handleRematch}
+          onExit={handleExit}
+        />
       )}
     </div>
   );
